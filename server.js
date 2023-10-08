@@ -19,8 +19,8 @@ app.get('/', (req, res) => {
     });
 });
 
-app.use('/', blogRoutes);
-app.use('/', searchRoutes);
+app.use('/api/blog-stats', blogRoutes);
+app.use('/api/blog-search', searchRoutes);
 
 app.all('*', (req, res, next) => {
     const err = new AppError(`Can't find ${req.originalUrl} on this server`, 404);

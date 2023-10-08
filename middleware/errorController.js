@@ -1,9 +1,3 @@
-const AppError = require('./AppError')
-
-const handleJWTError = () =>
-  new AppError(`Invalid token. Please login again`, 401);
-
-
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -34,19 +28,5 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   if (process.env.NODE_ENV === 'DEVELOPMENT') sendErrorDev(err, res);
-  else if (process.env.NODE_ENV === 'PRODUCTION') {
-    let error;
-    if (err.name === 'JsonWebTokenError') error = handleJWTError();
-    
-    if (error) sendErrorProd(error, res);
-    else sendErrorProd(err, res);
-  }
+  else if (process.env.NODE_ENV === 'PRODUCTION') sendErrorProd(err, res);
 };
-
-/////////////////////////////////////////////////////////////////
-/*
-function errorHandler(err, req, res, next) {
-    console.error('Error:', err.message);
-    res.status(500).json({ error: 'An error occurred' });
-}
-*/

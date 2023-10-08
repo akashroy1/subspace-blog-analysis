@@ -2,20 +2,23 @@ const express = require('express');
 const { fetchBlogData } = require('../controller/blogController');
 const { searchBlogs } = require('../controller/searchController');
 
+const AppError = require('../middleware/AppError');
+
 const router = express.Router();
 
-router.get('/api/blog-search', async (req, res) => {
+router.get('/', async (req, res, next) => {
   const query = req.query.query;
-  const allBlogs = await fetchBlogData();
-
   if (!query) {
-    return res.status(400).json({ error: 'Query parameter "query" is required' });
+    const error = new AppError("Query parameter 'query' is required", 400);
+    return next(error);
   }
-
-  const matchingBlogs = searchBlogs(allBlogs, query);
-
-  res.json({ matchingBlogs });
-
+  try{
+    const allBlogs = await fetchBlogData();
+    const matchingBlogs = searchBlogs(allBlogs, query);
+    res.json({ matchingBlogs });
+  } catch(err){
+    return next(err)
+  }
 });
 
 module.exports = router;

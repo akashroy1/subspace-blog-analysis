@@ -1,4 +1,5 @@
 const axios = require('axios');
+const AppError = require('../middleware/AppError');
 
 async function fetchBlogData() {
   try {
@@ -15,7 +16,7 @@ async function fetchBlogData() {
     return allBlogs;
 
   } catch (error) {
-    throw new Error('Failed to fetch blog data');
+    throw new AppError('Failed to fetch blog data', 500);
   }
 }
 

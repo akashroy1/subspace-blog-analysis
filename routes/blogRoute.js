@@ -4,7 +4,7 @@ const { fetchBlogData } = require('../controller/blogController');
 
 const router = express.Router();
 
-router.get('/api/blog-stats', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const allBlogs = await fetchBlogData();
     
@@ -21,8 +21,8 @@ router.get('/api/blog-stats', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in blog-stats route:', error);
-    res.status(500).json({ error: 'An error occurred' });
+    // res.status(500).json({ error: 'An error occurred' });
+    return next(error);
   }
 });
 
