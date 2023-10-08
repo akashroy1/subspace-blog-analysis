@@ -9,7 +9,8 @@ app.use(express.json());
 // Routes
 const blogRoutes = require('./routes/blogRoute');
 const searchRoutes = require('./routes/searchRoute');
-const errorHandler = require('./middleware/errorController');
+const AppError = require('./middleware/AppError');
+const globalErrorHandler = require('./middleware/errorController');
 
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -21,8 +22,13 @@ app.get('/', (req, res) => {
 app.use('/', blogRoutes);
 app.use('/', searchRoutes);
 
-// Error handling middleware
-app.use(errorHandler);
+app.all('*', (req, res, next) => {
+    const err = new AppError(`Can't find ${req.originalUrl} on this server`, 404);
+    next(err);
+});
+
+// GLOBAL ERROR HANDLER
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

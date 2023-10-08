@@ -1,5 +1,4 @@
 const axios = require('axios');
-const _ = require('lodash');
 
 async function fetchBlogData() {
   try {
