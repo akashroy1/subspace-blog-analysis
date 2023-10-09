@@ -4,24 +4,31 @@ const { fetchBlogData } = require('../controller/blogController');
 
 const router = express.Router();
 
+const calculateAnalysis = _.memoize((allBlogs)=>{
+  const totalBlogs = allBlogs.length;
+  const longestTitleBlog = _.maxBy(allBlogs, (blog) => blog.title.length);
+  const privacyBlogs = _.filter(allBlogs, (blog) => _.includes(_.toLower(blog.title), 'privacy'));
+  const uniqueTitles = _.uniqBy(allBlogs, 'title');
+
+  return {
+    totalBlogs,
+    longestTitle: longestTitleBlog.title,
+    privacyTitleCount: privacyBlogs.length,
+    uniqueTitles: uniqueTitles.map((blog) => blog.title)
+  };
+})
+
 router.get('/', async (req, res, next) => {
   try {
-    const allBlogs = await fetchBlogData();
+    const token = req.header('admin-secret');
+    const allBlogs = await fetchBlogData(token);
     
-    const totalBlogs = allBlogs.length;
-    const longestTitleBlog = _.maxBy(allBlogs, (blog) => blog.title.length);
-    const privacyBlogs = _.filter(allBlogs, (blog) => _.includes(_.toLower(blog.title), 'privacy'));
-    const uniqueTitles = _.uniqBy(allBlogs, 'title');
+    const analysis = calculateAnalysis(allBlogs);
+    
 
-    res.json({
-        totalBlogs,
-        longestTitle: longestTitleBlog.title,
-        privacyTitleCount: privacyBlogs.length,
-        uniqueTitles: uniqueTitles.map((blog) => blog.title),
-    });
+    res.json( analysis );
 
   } catch (error) {
-    // res.status(500).json({ error: 'An error occurred' });
     return next(error);
   }
 });

@@ -13,7 +13,8 @@ router.get('/', async (req, res, next) => {
     return next(error);
   }
   try{
-    const allBlogs = await fetchBlogData();
+    const token = req.header('admin-secret');
+    const allBlogs = await fetchBlogData(token);
     const matchingBlogs = searchBlogs(allBlogs, query);
     res.json({ matchingBlogs });
   } catch(err){
